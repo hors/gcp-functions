@@ -1,4 +1,4 @@
-package main
+package disks
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
-func main() {
+func init() {
 	ctx := context.Background()
 
 	c, err := google.DefaultClient(ctx, compute.CloudPlatformScope)
