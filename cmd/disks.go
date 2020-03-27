@@ -25,7 +25,14 @@ func CleanDisks(http.ResponseWriter, *http.Request) {
 			disksReq := computeService.Disks.List(project, zone.Name)
 			if err := disksReq.Pages(ctx, func(page *compute.DiskList) error {
 				for _, disk := range page.Items {
-					fmt.Printf("name: %v status: %v zone: %v\n", disk.Name, disk.Status, zone.Name)
+					if disk.Users == nil {
+						resp, err := computeService.Disks.Delete(project, zone.Name, disk.Name).Context(ctx).Do()
+						if err != nil {
+							log.Fatal(err)
+						}
+						fmt.Printf("%#v\n", resp.Status)
+						fmt.Printf("disk: %v in zone %v was deleted\n", disk.Name, zone.Name)
+					}
 				}
 				return nil
 			}); err != nil {
