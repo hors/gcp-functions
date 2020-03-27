@@ -1,29 +1,24 @@
 package disks
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
-	"golang.org/x/net/context"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/compute/v1"
 )
 
-func init() {
+// CleanDisks : remeve unused disks
+func CleanDisks(http.ResponseWriter, *http.Request) {
 	ctx := context.Background()
-
-	c, err := google.DefaultClient(ctx, compute.CloudPlatformScope)
+	computeService, err := compute.NewService(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	computeService, err := compute.New(c)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	project := os.Getenv("GCP_PROJECT")
+	project := os.Getenv("GCP_DEV_PROJECT")
 	zonesReq := computeService.Zones.List(project)
 	if err := zonesReq.Pages(ctx, func(page *compute.ZoneList) error {
 		for _, zone := range page.Items {
